@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from app.services.wkt import add_elevation_to_wkt
 
 main = Blueprint("main", __name__)
 
@@ -12,5 +13,11 @@ def elevation():
 
     if not wkt:
         return "Error: wkt parameter is required", 400
-    
-    return f"Received WKT: {wkt}"
+    try:
+        result = add_elevation_to_wkt(wkt)
+    except FileNotFoundError as error:
+        return f"Error: {error}", 500
+    except ValueError as error:
+        return f"Error: {error}", 400
+        
+    return result
